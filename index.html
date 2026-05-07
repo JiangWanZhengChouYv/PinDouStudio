@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="拼豆工坊 - 创意拼豆设计工具">
+  <title>拼豆工坊</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/pages/home.css">
+</head>
+<body>
+  <div id="home-view" class="view active">
+    <header class="header">
+      <h1 class="logo">拼豆工坊</h1>
+      <div class="header-actions">
+        <button id="create-project-btn" class="btn btn-primary">创建项目</button>
+        <button id="settings-btn" class="btn btn-icon" title="设置">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    
+    <main class="main-content">
+      <div id="project-grid" class="project-grid">
+      </div>
+      
+      <div id="empty-state" class="empty-state">
+        <div class="empty-icon">🎨</div>
+        <h2>还没有项目</h2>
+        <p>点击上方"创建项目"开始你的拼豆设计</p>
+      </div>
+    </main>
+    
+    <div id="create-modal" class="modal">
+      <div class="modal-content">
+        <h2>创建新项目</h2>
+        <form id="create-form">
+          <div class="form-group">
+            <label for="project-name">项目名称</label>
+            <input type="text" id="project-name" placeholder="我的拼豆设计" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="project-width">宽度 (8-128)</label>
+              <input type="number" id="project-width" min="8" max="128" value="32" required>
+            </div>
+            <div class="form-group">
+              <label for="project-height">高度 (8-128)</label>
+              <input type="number" id="project-height" min="8" max="128" value="32" required>
+            </div>
+          </div>
+          <div class="preset-sizes">
+            <span>预设尺寸：</span>
+            <button type="button" class="preset-btn" data-width="8" data-height="8">8×8</button>
+            <button type="button" class="preset-btn" data-width="16" data-height="16">16×16</button>
+            <button type="button" class="preset-btn active" data-width="32" data-height="32">32×32</button>
+            <button type="button" class="preset-btn" data-width="64" data-height="64">64×64</button>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="cancel-create">取消</button>
+            <button type="submit" class="btn btn-primary">创建</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <div id="rename-modal" class="modal">
+      <div class="modal-content">
+        <h2>重命名项目</h2>
+        <form id="rename-form">
+          <input type="hidden" id="rename-project-id">
+          <div class="form-group">
+            <label for="rename-project-name">新名称</label>
+            <input type="text" id="rename-project-name" required>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="cancel-rename">取消</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <div id="delete-modal" class="modal">
+      <div class="modal-content">
+        <h2>确认删除</h2>
+        <p>确定要删除项目 "<span id="delete-project-name"></span>" 吗？此操作无法撤销。</p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancel-delete">取消</button>
+          <button type="button" class="btn btn-danger" id="confirm-delete">删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="editor-view" class="view">
+  </div>
+  
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+  
+  <script src="js/app.js" type="module"></script>
+</body>
+</html>
