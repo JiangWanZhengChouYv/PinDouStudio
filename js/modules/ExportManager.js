@@ -128,14 +128,19 @@ class ExportManager {
     const processedHex = new Set();
 
     usedColorIndices.forEach(colorIndex => {
-      const hex = palette[colorIndex];
-      if (hex && !processedHex.has(hex)) {
-        processedHex.add(hex);
-        const colorInfo = this.findColorInfo(hex);
-        usedColors.push({
-          hex,
-          ...colorInfo
-        });
+      let hex = palette[colorIndex];
+      if (hex) {
+        if (typeof hex === 'object') {
+          hex = hex.hex;
+        }
+        if (hex && !processedHex.has(hex)) {
+          processedHex.add(hex);
+          const colorInfo = this.findColorInfo(hex);
+          usedColors.push({
+            hex,
+            ...colorInfo
+          });
+        }
       }
     });
 

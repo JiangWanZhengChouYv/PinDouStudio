@@ -637,21 +637,19 @@ class EditorController {
     const showGrid = document.getElementById('export-show-grid').checked;
     const showLabels = document.getElementById('export-show-labels').checked;
 
+    const project = projectManager.getProject(this.projectId);
     const options = {
       format,
       scale,
       showGrid,
       showLabels,
       labelFontSize: 12,
-      includeBrandCode: true
+      includeBrandCode: true,
+      projectName: project ? project.name : 'pindou'
     };
 
     try {
-      if (format === 'png') {
-        await exportManager.exportPNG(canvasEngine, colorManager, options);
-      } else {
-        await exportManager.exportPDF(canvasEngine, colorManager, options);
-      }
+      await exportManager.export(canvasEngine, colorManager, options);
       this.elements.exportModal.classList.remove('active');
     } catch (error) {
       console.error('Export failed:', error);
