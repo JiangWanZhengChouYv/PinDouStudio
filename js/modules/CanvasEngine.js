@@ -549,12 +549,12 @@ export class CanvasEngine {
   }
 
   zoomIn() {
-    this.pixelSize = Math.min(80, this.pixelSize * 1.25);
+    this.pixelSize = Math.min(80, this.pixelSize + 2);
     this.scheduleRender();
   }
 
   zoomOut() {
-    this.pixelSize = Math.max(5, this.pixelSize / 1.25);
+    this.pixelSize = Math.max(5, this.pixelSize - 2);
     this.scheduleRender();
   }
 
