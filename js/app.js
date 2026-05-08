@@ -305,14 +305,10 @@ class EditorController {
     
     canvasEngine.render();
 
-    const rowNumbersWidth = 30;
-    const columnNumbersHeight = 24;
-    const availableWidth = container.clientWidth - rowNumbersWidth;
-    const availableHeight = container.clientHeight - columnNumbersHeight;
     const pixelSize = Math.min(
       40,
-      Math.floor(availableWidth / project.width),
-      Math.floor(availableHeight / project.height)
+      Math.floor((container.clientWidth - 40) / project.width),
+      Math.floor((container.clientHeight - 40) / project.height)
     );
     canvasEngine.setPixelSize(Math.max(pixelSize, 10));
     

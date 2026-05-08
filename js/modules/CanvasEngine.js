@@ -12,6 +12,8 @@ export class CanvasEngine {
     this.offsetY = 0;
     this.showGrid = true;
     this.gridColor = '#000000';
+    this.showBorderNumbers = true;
+    this.numberSize = 24;
     this.thumbnailCanvas = null;
     this.thumbnailCtx = null;
     this.history = [];
@@ -31,30 +33,17 @@ export class CanvasEngine {
     this.ctx = canvasElement.getContext('2d');
     this.width = width;
     this.height = height;
-    this.palette = palette;
+    this.palette = palette || [];
     this.pixels = Array(height).fill(null).map(() => Array(width).fill(-1));
+    if (this.showBorderNumbers === undefined) {
+      this.showBorderNumbers = true;
+    }
+    if (!this.numberSize) {
+      this.numberSize = 24;
+    }
     this.initThumbnail();
     this.initEventListeners();
-    this.initRowColumnNumbers();
     this.saveState();
-  }
-
-  initRowColumnNumbers() {
-    const columnNumbersEl = document.getElementById('column-numbers');
-    const rowNumbersEl = document.getElementById('row-numbers');
-    if (!columnNumbersEl || !rowNumbersEl) return;
-    columnNumbersEl.innerHTML = '';
-    rowNumbersEl.innerHTML = '';
-    for (let x = 1; x <= this.width; x++) {
-      const span = document.createElement('span');
-      span.textContent = x;
-      columnNumbersEl.appendChild(span);
-    }
-    for (let y = 1; y <= this.height; y++) {
-      const span = document.createElement('span');
-      span.textContent = y;
-      rowNumbersEl.appendChild(span);
-    }
   }
 
   initThumbnail() {
@@ -113,7 +102,6 @@ export class CanvasEngine {
         oldPixels[y] && oldPixels[y][x] !== undefined ? oldPixels[y][x] : -1
       )
     );
-    this.initRowColumnNumbers();
     this.saveState();
     this.scheduleRender();
   }
@@ -171,17 +159,23 @@ export class CanvasEngine {
   }
 
   performRender() {
-    const { ctx, canvas, width, height, pixelSize, offsetX, offsetY, showGrid } = this;
-    const scaledWidth = width * pixelSize;
-    const scaledHeight = height * pixelSize;
+    const { ctx, canvas, width, height, pixelSize, offsetX, offsetY, showGrid, showBorderNumbers, numberSize } = this;
+    
+    const labelArea = showBorderNumbers ? numberSize : 0;
+    const scaledWidth = width * pixelSize + labelArea;
+    const scaledHeight = height * pixelSize + labelArea;
+    
     canvas.width = scaledWidth;
     canvas.height = scaledHeight;
     canvas.style.width = scaledWidth + 'px';
     canvas.style.height = scaledHeight + 'px';
+    
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
     ctx.save();
-    ctx.translate(offsetX, offsetY);
+    ctx.translate(labelArea, labelArea);
+    
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const colorIndex = this.pixels[y][x];
@@ -192,6 +186,7 @@ export class CanvasEngine {
         }
       }
     }
+    
     if (showGrid) {
       ctx.strokeStyle = '#cccccc';
       ctx.lineWidth = 1;
@@ -208,7 +203,31 @@ export class CanvasEngine {
         ctx.stroke();
       }
     }
+    
     ctx.restore();
+    
+    if (showBorderNumbers) {
+      ctx.fillStyle = '#666666';
+      ctx.font = `bold ${numberSize * 0.7}px Arial, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      for (let x = 0; x < width; x++) {
+        const num = x + 1;
+        const textWidth = ctx.measureText(num.toString()).width;
+        const centerX = labelArea + x * pixelSize + pixelSize / 2;
+        const centerY = labelArea / 2;
+        ctx.fillText(num.toString(), centerX, centerY);
+      }
+      
+      for (let y = 0; y < height; y++) {
+        const num = y + 1;
+        const centerX = labelArea / 2;
+        const centerY = labelArea + y * pixelSize + pixelSize / 2;
+        ctx.fillText(num.toString(), centerX, centerY);
+      }
+    }
+    
     this.updateThumbnail();
     this.emit('canvasRendered');
   }
@@ -269,6 +288,16 @@ export class CanvasEngine {
     this.scheduleRender();
   }
 
+  setBorderNumbersVisible(visible) {
+    this.showBorderNumbers = visible !== false;
+    this.scheduleRender();
+  }
+
+  setNumberSize(size) {
+    this.numberSize = Math.max(12, Math.min(48, size));
+    this.scheduleRender();
+  }
+
   getImageData() {
     return this.pixels.map(row => [...row]);
   }
@@ -279,11 +308,22 @@ export class CanvasEngine {
     this.scheduleRender();
   }
 
-  exportToCanvas(scale = 1) {
+  exportToCanvas(scale = 1, options = {}) {
+    const { includeNumbers = true, includeGrid = false, includeNumberBorder = false } = options;
+    
     const exportCanvas = document.createElement('canvas');
-    exportCanvas.width = this.width * scale;
-    exportCanvas.height = this.height * scale;
+    const numberArea = includeNumbers ? (this.numberSize * scale) : 0;
+    
+    exportCanvas.width = this.width * scale + numberArea;
+    exportCanvas.height = this.height * scale + numberArea;
     const exportCtx = exportCanvas.getContext('2d');
+    
+    exportCtx.fillStyle = '#ffffff';
+    exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+    
+    exportCtx.save();
+    exportCtx.translate(numberArea, numberArea);
+    
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
         const colorIndex = this.pixels[y][x];
@@ -296,6 +336,56 @@ export class CanvasEngine {
         }
       }
     }
+    
+    if (includeGrid) {
+      exportCtx.strokeStyle = '#cccccc';
+      exportCtx.lineWidth = scale > 2 ? 1 : 0.5;
+      for (let x = 0; x <= this.width; x++) {
+        exportCtx.beginPath();
+        exportCtx.moveTo(x * scale, 0);
+        exportCtx.lineTo(x * scale, this.height * scale);
+        exportCtx.stroke();
+      }
+      for (let y = 0; y <= this.height; y++) {
+        exportCtx.beginPath();
+        exportCtx.moveTo(0, y * scale);
+        exportCtx.lineTo(this.width * scale, y * scale);
+        exportCtx.stroke();
+      }
+    }
+    
+    exportCtx.restore();
+    
+    if (includeNumbers) {
+      exportCtx.fillStyle = '#666666';
+      const fontSize = this.numberSize * 0.7 * scale;
+      exportCtx.font = `bold ${fontSize}px Arial, sans-serif`;
+      exportCtx.textAlign = 'center';
+      exportCtx.textBaseline = 'middle';
+      
+      for (let x = 0; x < this.width; x++) {
+        const num = x + 1;
+        const centerX = numberArea + x * scale + scale / 2;
+        const centerY = numberArea / 2;
+        exportCtx.fillText(num.toString(), centerX, centerY);
+      }
+      
+      for (let y = 0; y < this.height; y++) {
+        const num = y + 1;
+        const centerX = numberArea / 2;
+        const centerY = numberArea + y * scale + scale / 2;
+        exportCtx.fillText(num.toString(), centerX, centerY);
+      }
+      
+      if (includeNumberBorder) {
+        exportCtx.strokeStyle = '#cccccc';
+        exportCtx.lineWidth = 1;
+        exportCtx.strokeRect(0, 0, numberArea, numberArea);
+        exportCtx.strokeRect(0, 0, exportCanvas.width, numberArea);
+        exportCtx.strokeRect(0, 0, numberArea, exportCanvas.height);
+      }
+    }
+    
     return exportCanvas;
   }
 
