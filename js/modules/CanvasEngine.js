@@ -161,10 +161,8 @@ export class CanvasEngine {
   performRender() {
     const { ctx, canvas, width, height, pixelSize, offsetX, offsetY, showGrid, showBorderNumbers, numberSize } = this;
     
-    const maxNum = Math.max(width, height);
-    const digitCount = maxNum.toString().length;
+    const labelArea = this.getLabelArea();
     const fontSize = Math.max(pixelSize * 0.5, 10);
-    const labelArea = showBorderNumbers ? Math.max(numberSize, digitCount * fontSize * 1.2) : 0;
     
     const scaledWidth = width * pixelSize + labelArea;
     const scaledHeight = height * pixelSize + labelArea;
@@ -523,11 +521,21 @@ export class CanvasEngine {
 
   getCanvasPosition(clientX, clientY) {
     const rect = this.canvas.getBoundingClientRect();
-    let x = Math.floor((clientX - rect.left) / this.pixelSize);
-    let y = Math.floor((clientY - rect.top) / this.pixelSize);
+    const labelArea = this.getLabelArea();
+    
+    let x = Math.floor((clientX - rect.left - labelArea) / this.pixelSize);
+    let y = Math.floor((clientY - rect.top - labelArea) / this.pixelSize);
     x = Math.max(0, Math.min(x, this.width - 1));
     y = Math.max(0, Math.min(y, this.height - 1));
     return { x, y };
+  }
+
+  getLabelArea() {
+    if (!this.showBorderNumbers) return 0;
+    const maxNum = Math.max(this.width, this.height);
+    const digitCount = maxNum.toString().length;
+    const fontSize = Math.max(this.pixelSize * 0.5, 10);
+    return Math.max(this.numberSize, digitCount * fontSize * 1.2);
   }
 
   destroy() {
