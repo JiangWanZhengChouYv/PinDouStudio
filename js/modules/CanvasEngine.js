@@ -403,6 +403,35 @@ export class CanvasEngine {
     this.canvas.removeEventListener('mouseup', this.handleMouseUp);
     this.canvas.removeEventListener('mouseleave', this.handleMouseUp);
   }
+
+  zoomIn() {
+    this.zoom = Math.min(32, this.zoom * 1.25);
+    this.scheduleRender();
+  }
+
+  zoomOut() {
+    this.zoom = Math.max(0.1, this.zoom / 1.25);
+    this.scheduleRender();
+  }
+
+  getZoom() {
+    return this.zoom;
+  }
+
+  getPixels() {
+    return this.pixels.map(row => [...row]);
+  }
+
+  setPixelSize(size) {
+    this.zoom = size;
+    this.scheduleRender();
+  }
+
+  getColorByIndex(index) {
+    if (index < 0 || index >= this.palette.length) return null;
+    return this.palette[index];
+  }
 }
 
 export default CanvasEngine;
+export const canvasEngine = new CanvasEngine();
