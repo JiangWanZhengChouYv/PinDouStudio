@@ -161,7 +161,11 @@ export class CanvasEngine {
   performRender() {
     const { ctx, canvas, width, height, pixelSize, offsetX, offsetY, showGrid, showBorderNumbers, numberSize } = this;
     
-    const labelArea = showBorderNumbers ? numberSize : 0;
+    const maxNum = Math.max(width, height);
+    const digitCount = maxNum.toString().length;
+    const fontSize = Math.max(pixelSize * 0.5, 10);
+    const labelArea = showBorderNumbers ? Math.max(numberSize, digitCount * fontSize * 1.2) : 0;
+    
     const scaledWidth = width * pixelSize + labelArea;
     const scaledHeight = height * pixelSize + labelArea;
     
@@ -208,13 +212,12 @@ export class CanvasEngine {
     
     if (showBorderNumbers) {
       ctx.fillStyle = '#666666';
-      ctx.font = `bold ${numberSize * 0.7}px Arial, sans-serif`;
+      ctx.font = `bold ${fontSize}px Arial, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       
       for (let x = 0; x < width; x++) {
         const num = x + 1;
-        const textWidth = ctx.measureText(num.toString()).width;
         const centerX = labelArea + x * pixelSize + pixelSize / 2;
         const centerY = labelArea / 2;
         ctx.fillText(num.toString(), centerX, centerY);
