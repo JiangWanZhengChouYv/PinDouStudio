@@ -142,8 +142,8 @@ class HomeController {
         <p class="project-meta">${project.width}×${project.height} · ${this.formatDate(project.updatedAt)}</p>
       </div>
       <div class="project-actions">
-        <button class="action-btn delete-btn" title="删除">删</button>
-        <button class="action-btn edit-btn" title="编辑">编</button>
+        <button class="action-btn edit-btn" title="编辑">编辑</button>
+        <button class="action-btn delete-btn" title="删除">删除</button>
       </div>
     `;
 

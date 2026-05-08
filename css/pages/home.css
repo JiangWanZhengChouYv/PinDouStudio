@@ -201,7 +201,6 @@
 }
 
 .action-btn:hover {
-  background-color: var(--color-surface);
   transform: scale(1.1);
 }
 
