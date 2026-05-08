@@ -519,12 +519,11 @@ export class CanvasEngine {
     this.saveState();
   }
 
-  getCanvasPosition(clientX, clientY) {
-    const rect = this.canvas.getBoundingClientRect();
+  getCanvasPosition(localX, localY) {
     const labelArea = this.getLabelArea();
     
-    let x = Math.floor((clientX - rect.left - labelArea) / this.pixelSize);
-    let y = Math.floor((clientY - rect.top - labelArea) / this.pixelSize);
+    let x = Math.floor((localX - labelArea) / this.pixelSize);
+    let y = Math.floor((localY - labelArea) / this.pixelSize);
     x = Math.max(0, Math.min(x, this.width - 1));
     y = Math.max(0, Math.min(y, this.height - 1));
     return { x, y };

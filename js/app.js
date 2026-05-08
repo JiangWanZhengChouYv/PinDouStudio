@@ -396,7 +396,10 @@ class EditorController {
     this.elements.canvasContainer.addEventListener('mousedown', (e) => {
       if (e.button === 0) {
         this.isDrawing = true;
-        const pos = canvasEngine.getCanvasPosition(e.clientX, e.clientY);
+        const rect = this.elements.canvasContainer.getBoundingClientRect();
+        const localX = e.clientX - rect.left;
+        const localY = e.clientY - rect.top;
+        const pos = canvasEngine.getCanvasPosition(localX, localY);
         if (pos && pos.x >= 0 && pos.y >= 0 && pos.x < canvasEngine.width && pos.y < canvasEngine.height) {
           toolManager.executeTool(pos.x, pos.y);
         }
@@ -405,7 +408,10 @@ class EditorController {
 
     this.elements.canvasContainer.addEventListener('mousemove', (e) => {
       if (this.isDrawing) {
-        const pos = canvasEngine.getCanvasPosition(e.clientX, e.clientY);
+        const rect = this.elements.canvasContainer.getBoundingClientRect();
+        const localX = e.clientX - rect.left;
+        const localY = e.clientY - rect.top;
+        const pos = canvasEngine.getCanvasPosition(localX, localY);
         if (pos && pos.x >= 0 && pos.y >= 0 && pos.x < canvasEngine.width && pos.y < canvasEngine.height) {
           toolManager.executeTool(pos.x, pos.y);
         }
