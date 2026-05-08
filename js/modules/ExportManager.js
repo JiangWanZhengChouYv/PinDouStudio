@@ -1,3 +1,6 @@
+import { perlerColors } from '../data/perler-colors.js';
+import { artkalColors } from '../data/artkal-colors.js';
+
 export const EXPORT_OPTIONS = {
   format: 'png',
   scale: 1,
@@ -167,29 +170,19 @@ class ExportManager {
 
   getColorsByBrand(brand) {
     if (brand === 'perler') {
-      return this.getPerlerColors();
+      return perlerColors.colors || [];
     } else if (brand === 'artkal') {
-      return this.getArtkalColors();
+      return artkalColors.colors || [];
     }
     return [];
   }
 
   getPerlerColors() {
-    try {
-      const { perlerColors } = require('../data/perler-colors.js');
-      return perlerColors || [];
-    } catch (e) {
-      return [];
-    }
+    return perlerColors.colors || [];
   }
 
   getArtkalColors() {
-    try {
-      const { artkalColors } = require('../data/artkal-colors.js');
-      return artkalColors || [];
-    } catch (e) {
-      return [];
-    }
+    return artkalColors.colors || [];
   }
 
   async exportPNG(canvasEngine, colorManager, options = {}) {

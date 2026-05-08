@@ -32,17 +32,17 @@ class ColorManager {
 
   getAllBrands() {
     return [
-      { id: 'perler', name: 'Perler', colors: perlerColors },
-      { id: 'artkal', name: 'Artkal', colors: artkalColors }
+      { id: 'perler', name: 'Perler', colors: perlerColors.colors || [] },
+      { id: 'artkal', name: 'Artkal', colors: artkalColors.colors || [] }
     ];
   }
 
   getColorsByBrand(brand) {
     const brandLower = brand.toLowerCase();
     if (brandLower === 'perler') {
-      return perlerColors;
+      return perlerColors.colors || [];
     } else if (brandLower === 'artkal') {
-      return artkalColors;
+      return artkalColors.colors || [];
     }
     return [];
   }

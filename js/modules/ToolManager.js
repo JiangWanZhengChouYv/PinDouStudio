@@ -80,25 +80,37 @@ export class ToolManager {
 
   executePencil(x, y) {
     if (!this.canvasEngine) return;
-    const { color } = this.settings.pencil;
-    this.canvasEngine.setPixel(x, y, color);
+    const colorIndex = this.settings.pencil.colorIndex;
+    if (colorIndex !== undefined && colorIndex !== null) {
+      this.canvasEngine.setPixel(x, y, colorIndex);
+    }
   }
 
   executeEraser(x, y) {
     if (!this.canvasEngine) return;
-    this.canvasEngine.setPixel(x, y, null);
+    this.canvasEngine.setPixel(x, y, -1);
   }
 
   executeFill(x, y) {
     if (!this.canvasEngine) return;
-    const { color } = this.settings.fill;
-    this.canvasEngine.floodFill(x, y, color);
+    const colorIndex = this.settings.fill.colorIndex;
+    if (colorIndex !== undefined && colorIndex !== null) {
+      this.canvasEngine.floodFill(x, y, colorIndex);
+    }
   }
 
   executePicker(x, y) {
     if (!this.canvasEngine) return;
-    const color = this.canvasEngine.getPixelColor(x, y);
-    this.emit('colorPicked', { color, x, y });
+    const colorIndex = this.canvasEngine.getPixel(x, y);
+    const color = this.canvasEngine.getColorByIndex ? this.canvasEngine.getColorByIndex(colorIndex) : colorIndex;
+    this.emit('colorPicked', { color, colorIndex, x, y });
+  }
+
+  setCurrentColor(color) {
+    if (!color) return;
+    const colorIndex = typeof color === 'object' && color.index !== undefined ? color.index : color;
+    this.settings.pencil.colorIndex = colorIndex;
+    this.settings.fill.colorIndex = colorIndex;
   }
 
   on(event, callback) {
