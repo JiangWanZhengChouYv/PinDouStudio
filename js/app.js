@@ -327,6 +327,7 @@ class EditorController {
       zoomLevel: document.getElementById('zoom-level'),
       exportBtn: document.getElementById('export-btn'),
       canvasContainer: document.getElementById('canvas-container'),
+      pixelCanvas: document.getElementById('pixel-canvas'),
       colorGrid: document.getElementById('color-grid'),
       currentColorPreview: document.getElementById('current-color-preview'),
       currentColorCode: document.getElementById('current-color-code'),
@@ -393,10 +394,10 @@ class EditorController {
       });
     });
 
-    this.elements.canvasContainer.addEventListener('mousedown', (e) => {
+    this.elements.pixelCanvas.addEventListener('mousedown', (e) => {
       if (e.button === 0) {
         this.isDrawing = true;
-        const rect = this.elements.canvasContainer.getBoundingClientRect();
+        const rect = this.elements.pixelCanvas.getBoundingClientRect();
         const localX = e.clientX - rect.left;
         const localY = e.clientY - rect.top;
         const pos = canvasEngine.getCanvasPosition(localX, localY);
@@ -406,9 +407,9 @@ class EditorController {
       }
     });
 
-    this.elements.canvasContainer.addEventListener('mousemove', (e) => {
+    this.elements.pixelCanvas.addEventListener('mousemove', (e) => {
       if (this.isDrawing) {
-        const rect = this.elements.canvasContainer.getBoundingClientRect();
+        const rect = this.elements.pixelCanvas.getBoundingClientRect();
         const localX = e.clientX - rect.left;
         const localY = e.clientY - rect.top;
         const pos = canvasEngine.getCanvasPosition(localX, localY);
