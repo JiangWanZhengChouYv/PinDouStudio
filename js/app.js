@@ -298,13 +298,13 @@ class EditorController {
     this.router = router;
     this.projectId = null;
     this.elements = {};
+    this.isDrawing = false;
     this.init();
   }
 
   init() {
     this.cacheElements();
     this.setupEventListeners();
-    this.setupColorPanel();
     toolManager.on('toolChanged', (tool) => this.updateToolUI(tool));
     toolManager.on('colorPicked', (color) => this.handleColorPicked(color));
   }
@@ -323,6 +323,12 @@ class EditorController {
 
     canvasEngine.init(canvas, project.width, project.height);
     canvasEngine.setPalette(colorManager.getColorsByBrand('artkal'));
+    toolManager.setCanvasEngine(canvasEngine);
+    
+    if (project.pixels && project.pixels.length > 0) {
+      canvasEngine.setImageData(project.pixels);
+    }
+    
     canvasEngine.render();
 
     const pixelSize = Math.min(
@@ -330,7 +336,10 @@ class EditorController {
       Math.floor((container.clientWidth - 40) / project.width),
       Math.floor((container.clientHeight - 40) / project.height)
     );
-    canvasEngine.setPixelSize(pixelSize);
+    canvasEngine.setPixelSize(Math.max(pixelSize, 10));
+    
+    this.setupColorPanel();
+    this.renderProjectColors();
   }
 
   cacheElements() {
@@ -410,25 +419,26 @@ class EditorController {
       });
     });
 
-    this.elements.canvasContainer.addEventListener('click', (e) => {
-      const rect = this.elements.canvasContainer.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const pos = canvasEngine.getCanvasPosition(x, y);
-      if (pos) {
-        toolManager.executeTool(pos.x, pos.y);
-        this.saveProject();
-      }
-    });
-
     this.elements.canvasContainer.addEventListener('mousedown', (e) => {
       if (e.button === 0) {
+        this.isDrawing = true;
         const rect = this.elements.canvasContainer.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         const pos = canvasEngine.getCanvasPosition(x, y);
-        if (pos) {
-          this.isDrawing = true;
+        if (pos && pos.x >= 0 && pos.y >= 0) {
+          toolManager.executeTool(pos.x, pos.y);
+        }
+      }
+    });
+
+    this.elements.canvasContainer.addEventListener('mousemove', (e) => {
+      if (this.isDrawing) {
+        const rect = this.elements.canvasContainer.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const pos = canvasEngine.getCanvasPosition(x, y);
+        if (pos && pos.x >= 0 && pos.y >= 0) {
           toolManager.executeTool(pos.x, pos.y);
         }
       }
@@ -438,18 +448,6 @@ class EditorController {
       if (this.isDrawing) {
         this.isDrawing = false;
         this.saveProject();
-      }
-    });
-
-    document.addEventListener('mousemove', (e) => {
-      if (this.isDrawing) {
-        const rect = this.elements.canvasContainer.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const pos = canvasEngine.getCanvasPosition(x, y);
-        if (pos) {
-          toolManager.executeTool(pos.x, pos.y);
-        }
       }
     });
 
@@ -464,7 +462,8 @@ class EditorController {
     this.elements.addToPaletteBtn.addEventListener('click', () => {
       const hex = this.elements.hexInput.value;
       if (this.isValidHex(hex)) {
-        colorManager.addToPalette(hex);
+        const rgb = colorManager.hexToRgb(hex);
+        colorManager.addToPalette({ hex, rgb: [rgb.r, rgb.g, rgb.b], name: '自定义' });
         this.renderProjectColors();
       }
     });
@@ -515,7 +514,7 @@ class EditorController {
     const grid = this.elements.colorGrid;
     grid.innerHTML = '';
 
-    colors.forEach(color => {
+    colors.forEach((color, index) => {
       const colorBtn = document.createElement('button');
       colorBtn.className = 'color-item';
       colorBtn.style.backgroundColor = color.hex;
@@ -530,8 +529,8 @@ class EditorController {
     const activeBrand = document.querySelector('.brand-tab.active').dataset.brand;
     const colors = colorManager.getColorsByBrand(activeBrand);
     const filtered = colors.filter(c =>
-      c.code.toLowerCase().includes(query) ||
-      c.name.toLowerCase().includes(query)
+      (c.code && c.code.toLowerCase().includes(query)) ||
+      (c.name && c.name.toLowerCase().includes(query))
     );
 
     const grid = this.elements.colorGrid;
@@ -550,13 +549,15 @@ class EditorController {
   selectColor(color) {
     toolManager.setCurrentColor(color);
     this.elements.currentColorPreview.style.backgroundColor = color.hex;
-    this.elements.currentColorCode.textContent = color.code;
-    this.elements.currentColorName.textContent = color.name;
+    this.elements.currentColorCode.textContent = color.code || '-';
+    this.elements.currentColorName.textContent = color.name || '自定义';
     this.elements.hexInput.value = color.hex;
     const rgb = colorManager.hexToRgb(color.hex);
-    this.elements.rInput.value = rgb.r;
-    this.elements.gInput.value = rgb.g;
-    this.elements.bInput.value = rgb.b;
+    if (rgb) {
+      this.elements.rInput.value = rgb.r;
+      this.elements.gInput.value = rgb.g;
+      this.elements.bInput.value = rgb.b;
+    }
     this.elements.customColorPreview.style.backgroundColor = color.hex;
   }
 
@@ -565,9 +566,11 @@ class EditorController {
     if (this.isValidHex(hex)) {
       this.elements.customColorPreview.style.backgroundColor = hex;
       const rgb = colorManager.hexToRgb(hex);
-      this.elements.rInput.value = rgb.r;
-      this.elements.gInput.value = rgb.g;
-      this.elements.bInput.value = rgb.b;
+      if (rgb) {
+        this.elements.rInput.value = rgb.r;
+        this.elements.gInput.value = rgb.g;
+        this.elements.bInput.value = rgb.b;
+      }
     }
   }
 
@@ -609,26 +612,28 @@ class EditorController {
   }
 
   handleColorPicked(color) {
-    toolManager.setCurrentColor(color);
-    this.elements.currentColorPreview.style.backgroundColor = color.hex;
-    this.elements.currentColorCode.textContent = color.code || '自定义';
-    this.elements.currentColorName.textContent = color.name || '自定义颜色';
+    if (color && color.hex) {
+      toolManager.setCurrentColor(color.hex);
+      this.elements.currentColorPreview.style.backgroundColor = color.hex;
+      this.elements.currentColorCode.textContent = color.code || '-';
+      this.elements.currentColorName.textContent = color.name || '自定义';
+    }
   }
 
   updateToolUI(tool) {
     document.querySelectorAll('.tool-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.tool === tool);
+      btn.classList.toggle('active', btn.dataset.tool === (tool.currentTool || tool));
     });
   }
 
   updateZoomLevel() {
-    const zoom = Math.round(canvasEngine.getZoom() * 100);
+    const zoom = canvasEngine.getZoom();
     this.elements.zoomLevel.textContent = `${zoom}%`;
   }
 
   async handleExport() {
     const format = document.getElementById('export-format').value;
-    const scale = parseInt(document.getElementById('export-scale').value);
+    const scale = parseInt(document.getElementById('export-scale').value) || 1;
     const showGrid = document.getElementById('export-show-grid').checked;
     const showLabels = document.getElementById('export-show-labels').checked;
 
@@ -661,7 +666,6 @@ class EditorController {
     if (project) {
       project.name = this.elements.projectTitle.value;
       project.pixels = canvasEngine.getPixels();
-      project.palette = colorManager.getPalette().map(c => c.index);
       project.thumbnail = canvasEngine.getThumbnailData();
       project.updatedAt = Date.now();
       projectManager.updateProject(this.projectId, project);
@@ -721,7 +725,8 @@ class SettingsController {
   }
 
   loadSettings() {
-    const settings = JSON.parse(localStorage.getItem('pindou_projects') || '{"settings":{}}').settings || {};
+    const data = JSON.parse(localStorage.getItem('pindou_projects') || '{"settings":{}}');
+    const settings = data.settings || {};
 
     this.elements.darkModeToggle.checked = settings.theme === 'dark';
     this.elements.defaultExportFormat.value = settings.defaultExportFormat || 'png';
@@ -729,14 +734,12 @@ class SettingsController {
   }
 
   saveSettings() {
-    const settings = {
+    const data = JSON.parse(localStorage.getItem('pindou_projects') || '{}');
+    data.settings = {
       theme: this.elements.darkModeToggle.checked ? 'dark' : 'light',
       defaultExportFormat: this.elements.defaultExportFormat.value,
       defaultExportScale: parseInt(this.elements.defaultExportScale.value)
     };
-
-    const data = JSON.parse(localStorage.getItem('pindou_projects') || '{}');
-    data.settings = settings;
     localStorage.setItem('pindou_projects', JSON.stringify(data));
   }
 

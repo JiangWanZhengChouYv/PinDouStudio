@@ -151,38 +151,42 @@ export class CanvasEngine {
   }
 
   performRender() {
-    const { ctx, canvas, width, height, zoom, offsetX, offsetY, showGrid } = this;
-    const scaledWidth = width * zoom;
-    const scaledHeight = height * zoom;
+    const { ctx, canvas, width, height, pixelSize, offsetX, offsetY, showGrid } = this;
+    const scaledWidth = width * pixelSize;
+    const scaledHeight = height * pixelSize;
     canvas.width = scaledWidth;
     canvas.height = scaledHeight;
+    canvas.style.width = scaledWidth + 'px';
+    canvas.style.height = scaledHeight + 'px';
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(offsetX, offsetY);
-    ctx.scale(zoom, zoom);
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const colorIndex = this.pixels[y][x];
         if (colorIndex !== -1 && this.palette[colorIndex]) {
-          ctx.fillStyle = this.palette[colorIndex];
-          ctx.fillRect(x, y, 1, 1);
+          const color = this.palette[colorIndex];
+          ctx.fillStyle = typeof color === 'object' ? color.hex : color;
+          ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
         }
       }
     }
-    if (showGrid && zoom >= 4) {
-      ctx.strokeStyle = this.gridColor;
-      ctx.lineWidth = 1 / zoom;
-      ctx.beginPath();
+    if (showGrid) {
+      ctx.strokeStyle = '#cccccc';
+      ctx.lineWidth = 1;
       for (let x = 0; x <= width; x++) {
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
+        ctx.beginPath();
+        ctx.moveTo(x * pixelSize, 0);
+        ctx.lineTo(x * pixelSize, height * pixelSize);
+        ctx.stroke();
       }
       for (let y = 0; y <= height; y++) {
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
+        ctx.beginPath();
+        ctx.moveTo(0, y * pixelSize);
+        ctx.lineTo(width * pixelSize, y * pixelSize);
+        ctx.stroke();
       }
-      ctx.stroke();
     }
     ctx.restore();
     this.updateThumbnail();
@@ -207,7 +211,8 @@ export class CanvasEngine {
       for (let x = 0; x < width; x++) {
         const colorIndex = this.pixels[y][x];
         if (colorIndex !== -1 && this.palette[colorIndex]) {
-          thumbnailCtx.fillStyle = this.palette[colorIndex];
+          const color = this.palette[colorIndex];
+          thumbnailCtx.fillStyle = typeof color === 'object' ? color.hex : color;
           thumbnailCtx.fillRect(x * scale, y * scale, scale, scale);
         }
       }
@@ -321,10 +326,21 @@ export class CanvasEngine {
     }
   }
 
-  floodFill(startX, startY, newColorIndex) {
+  floodFill(startX, startY, newColor) {
     if (startX < 0 || startX >= this.width || startY < 0 || startY >= this.height) return;
+    
+    let newColorIndex = newColor;
+    if (typeof newColor === 'string') {
+      newColorIndex = this.palette.findIndex(c => c && c.hex === newColor);
+      if (newColorIndex === -1) {
+        this.palette.push({ hex: newColor });
+        newColorIndex = this.palette.length - 1;
+      }
+    }
+    
     const targetColorIndex = this.pixels[startY][startX];
     if (targetColorIndex === newColorIndex) return;
+    
     const stack = [[startX, startY]];
     const visited = new Set();
     while (stack.length > 0) {
@@ -394,8 +410,8 @@ export class CanvasEngine {
 
   getCanvasPosition(clientX, clientY) {
     const rect = this.canvas.getBoundingClientRect();
-    const x = Math.floor((clientX - rect.left - this.offsetX) / this.zoom);
-    const y = Math.floor((clientY - rect.top - this.offsetY) / this.zoom);
+    const x = Math.floor((clientX - rect.left - this.offsetX) / this.pixelSize);
+    const y = Math.floor((clientY - rect.top - this.offsetY) / this.pixelSize);
     return { x, y };
   }
 
@@ -411,17 +427,17 @@ export class CanvasEngine {
   }
 
   zoomIn() {
-    this.zoom = Math.min(32, this.zoom * 1.25);
+    this.pixelSize = Math.min(80, this.pixelSize * 1.25);
     this.scheduleRender();
   }
 
   zoomOut() {
-    this.zoom = Math.max(0.1, this.zoom / 1.25);
+    this.pixelSize = Math.max(5, this.pixelSize / 1.25);
     this.scheduleRender();
   }
 
   getZoom() {
-    return this.pixelSize || this.zoom;
+    return Math.round(this.pixelSize / 20 * 100);
   }
 
   getPixels() {

@@ -10,12 +10,13 @@ export class ToolManager {
     this.currentTool = TOOLS.PENCIL;
     this.canvasEngine = null;
     this.settings = {
-      pencil: { size: 1, color: '#000000' },
+      pencil: { size: 1, color: null },
       eraser: { size: 1 },
-      fill: { color: '#000000' },
+      fill: { color: null },
       picker: {}
     };
     this.listeners = {};
+    this.currentColor = null;
     this.init();
   }
 
@@ -80,7 +81,7 @@ export class ToolManager {
 
   executePencil(x, y) {
     if (!this.canvasEngine) return;
-    const color = this.settings.pencil.color;
+    const color = this.settings.pencil.color || this.currentColor;
     if (color) {
       this.canvasEngine.setPixel(x, y, color);
     }
@@ -93,9 +94,9 @@ export class ToolManager {
 
   executeFill(x, y) {
     if (!this.canvasEngine) return;
-    const colorIndex = this.settings.fill.colorIndex;
-    if (colorIndex !== undefined && colorIndex !== null) {
-      this.canvasEngine.floodFill(x, y, colorIndex);
+    const color = this.settings.fill.color || this.currentColor;
+    if (color) {
+      this.canvasEngine.floodFill(x, y, color);
     }
   }
 
@@ -109,13 +110,13 @@ export class ToolManager {
   setCurrentColor(color) {
     if (!color) return;
     if (typeof color === 'object') {
-      this.settings.pencil.color = color.hex || '#000000';
-      this.settings.fill.color = color.hex || '#000000';
-      this.currentColor = color;
+      this.currentColor = color.hex || '#000000';
+      this.settings.pencil.color = this.currentColor;
+      this.settings.fill.color = this.currentColor;
     } else {
+      this.currentColor = color;
       this.settings.pencil.color = color;
       this.settings.fill.color = color;
-      this.currentColor = { hex: color };
     }
   }
 
