@@ -205,25 +205,21 @@
 }
 
 .delete-btn {
-  background-color: #ef4444;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
+  background-color: #ef4444 !important;
+  color: white !important;
 }
 
 .delete-btn:hover {
-  background-color: #dc2626;
+  background-color: #dc2626 !important;
 }
 
 .edit-btn {
-  background-color: #3b82f6;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
+  background-color: #3b82f6 !important;
+  color: white !important;
 }
 
 .edit-btn:hover {
-  background-color: #2563eb;
+  background-color: #2563eb !important;
 }
 
 .dropdown-menu {
