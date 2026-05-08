@@ -7,6 +7,7 @@ export class CanvasEngine {
     this.pixels = [];
     this.palette = [];
     this.zoom = 1;
+    this.pixelSize = 20;
     this.offsetX = 0;
     this.offsetY = 0;
     this.showGrid = true;
@@ -415,7 +416,7 @@ export class CanvasEngine {
   }
 
   getZoom() {
-    return this.zoom;
+    return this.pixelSize || this.zoom;
   }
 
   getPixels() {
@@ -423,7 +424,7 @@ export class CanvasEngine {
   }
 
   setPixelSize(size) {
-    this.zoom = size;
+    this.pixelSize = size;
     this.scheduleRender();
   }
 
