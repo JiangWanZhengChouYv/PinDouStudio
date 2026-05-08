@@ -215,16 +215,17 @@
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   min-width: 120px;
-  overflow: hidden;
-  opacity: 0;
-  visibility: hidden;
+  overflow: visible;
+  opacity: 1;
+  visibility: visible;
   transform: translateY(-10px);
   transition: all var(--transition-fast);
+  z-index: 1000;
+  display: none;
 }
 
 .dropdown-menu.active {
-  opacity: 1;
-  visibility: visible;
+  display: block;
   transform: translateY(0);
 }
 
