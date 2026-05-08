@@ -180,7 +180,7 @@
   z-index: 10;
 }
 
-.menu-btn {
+.action-btn {
   width: 32px;
   height: 32px;
   border: none;
@@ -196,13 +196,21 @@
   box-shadow: var(--shadow-sm);
 }
 
-.project-card:hover .menu-btn {
+.project-card:hover .action-btn {
   opacity: 1;
 }
 
-.menu-btn:hover {
+.action-btn:hover {
   background-color: var(--color-surface);
   transform: scale(1.1);
+}
+
+.delete-btn {
+  color: #ef4444;
+}
+
+.delete-btn:hover {
+  background-color: #fee2e2;
 }
 
 .dropdown-menu {
