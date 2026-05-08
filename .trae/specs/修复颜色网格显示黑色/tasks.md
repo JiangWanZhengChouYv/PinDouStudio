@@ -35,7 +35,7 @@
   - `human-judgement` TR-3.1: 点击颜色按钮后当前颜色预览更新
   - `human-judgement` TR-3.2: 颜色代码和名称正确显示
 
-## [/] Task 4: 提交修复到版本控制
+## [x] Task 4: 提交修复到版本控制
 - **Priority**: P1
 - **Depends On**: Task 3
 - **Description**: 

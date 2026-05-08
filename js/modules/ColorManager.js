@@ -1,5 +1,6 @@
 import { perlerColors } from '../data/perler-colors.js';
 import { artkalColors } from '../data/artkal-colors.js';
+import { mardColors } from '../data/mard-colors.js';
 
 class ColorManager {
   constructor() {
@@ -33,7 +34,8 @@ class ColorManager {
   getAllBrands() {
     return [
       { id: 'perler', name: 'Perler', colors: perlerColors.colors || [] },
-      { id: 'artkal', name: 'Artkal', colors: artkalColors.colors || [] }
+      { id: 'artkal', name: 'Artkal', colors: artkalColors.colors || [] },
+      { id: 'mard', name: 'Mard', colors: mardColors.colors || [] }
     ];
   }
 
@@ -43,6 +45,8 @@ class ColorManager {
       return perlerColors.colors || [];
     } else if (brandLower === 'artkal') {
       return artkalColors.colors || [];
+    } else if (brandLower === 'mard') {
+      return mardColors.colors || [];
     }
     return [];
   }
