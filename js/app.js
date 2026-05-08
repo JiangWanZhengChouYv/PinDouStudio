@@ -322,7 +322,7 @@ class EditorController {
     const container = this.elements.canvasContainer;
 
     canvasEngine.init(canvas, project.width, project.height);
-    canvasEngine.setPalette(colorManager.getAllBrands()[0]);
+    canvasEngine.setPalette(colorManager.getColorsByBrand('artkal'));
     canvasEngine.render();
 
     const pixelSize = Math.min(
@@ -826,6 +826,8 @@ class App {
       this.showView('home');
       if (!this.homeController) {
         this.homeController = new HomeController(this.router);
+      } else {
+        this.homeController.loadProjects();
       }
     }
   }

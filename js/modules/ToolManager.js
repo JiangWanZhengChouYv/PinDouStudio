@@ -80,9 +80,9 @@ export class ToolManager {
 
   executePencil(x, y) {
     if (!this.canvasEngine) return;
-    const colorIndex = this.settings.pencil.colorIndex;
-    if (colorIndex !== undefined && colorIndex !== null) {
-      this.canvasEngine.setPixel(x, y, colorIndex);
+    const color = this.settings.pencil.color;
+    if (color) {
+      this.canvasEngine.setPixel(x, y, color);
     }
   }
 
@@ -108,9 +108,19 @@ export class ToolManager {
 
   setCurrentColor(color) {
     if (!color) return;
-    const colorIndex = typeof color === 'object' && color.index !== undefined ? color.index : color;
-    this.settings.pencil.colorIndex = colorIndex;
-    this.settings.fill.colorIndex = colorIndex;
+    if (typeof color === 'object') {
+      this.settings.pencil.color = color.hex || '#000000';
+      this.settings.fill.color = color.hex || '#000000';
+      this.currentColor = color;
+    } else {
+      this.settings.pencil.color = color;
+      this.settings.fill.color = color;
+      this.currentColor = { hex: color };
+    }
+  }
+
+  getCurrentColor() {
+    return this.currentColor;
   }
 
   on(event, callback) {

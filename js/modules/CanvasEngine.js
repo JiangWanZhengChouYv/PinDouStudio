@@ -98,8 +98,22 @@ export class CanvasEngine {
     this.scheduleRender();
   }
 
-  setPixel(x, y, colorIndex) {
+  setPixel(x, y, color) {
     if (x < 0 || x >= this.width || y < 0 || y >= this.height) return;
+    
+    let colorIndex = color;
+    if (typeof color === 'string') {
+      if (color === 'transparent' || color === 'rgba(0,0,0,0)') {
+        colorIndex = -1;
+      } else {
+        colorIndex = this.palette.findIndex(c => c && c.hex === color);
+        if (colorIndex === -1) {
+          this.palette.push({ hex: color });
+          colorIndex = this.palette.length - 1;
+        }
+      }
+    }
+    
     if (this.pixels[y][x] === colorIndex) return;
     this.pixels[y][x] = colorIndex;
     this.emit('pixelChanged', { x, y, colorIndex });
@@ -240,23 +254,6 @@ export class CanvasEngine {
     this.scheduleRender();
   }
 
-  exportToImage(scale = 1) {
-    const exportCanvas = document.createElement('canvas');
-    exportCanvas.width = this.width * scale;
-    exportCanvas.height = this.height * scale;
-    const exportCtx = exportCanvas.getContext('2d');
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
-        const colorIndex = this.pixels[y][x];
-        if (colorIndex !== -1 && this.palette[colorIndex]) {
-          exportCtx.fillStyle = this.palette[colorIndex];
-          exportCtx.fillRect(x * scale, y * scale, scale, scale);
-        }
-      }
-    }
-    return exportCanvas.toDataURL('image/png');
-  }
-
   exportToCanvas(scale = 1) {
     const exportCanvas = document.createElement('canvas');
     exportCanvas.width = this.width * scale;
@@ -266,12 +263,20 @@ export class CanvasEngine {
       for (let x = 0; x < this.width; x++) {
         const colorIndex = this.pixels[y][x];
         if (colorIndex !== -1 && this.palette[colorIndex]) {
-          exportCtx.fillStyle = this.palette[colorIndex];
+          const color = typeof this.palette[colorIndex] === 'object' 
+            ? this.palette[colorIndex].hex 
+            : this.palette[colorIndex];
+          exportCtx.fillStyle = color;
           exportCtx.fillRect(x * scale, y * scale, scale, scale);
         }
       }
     }
     return exportCanvas;
+  }
+
+  exportToImage(scale = 1) {
+    const exportCanvas = this.exportToCanvas(scale);
+    return exportCanvas.toDataURL('image/png');
   }
 
   drawPixel(x, y, colorIndex) {
