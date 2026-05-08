@@ -300,6 +300,25 @@
   align-content: start;
 }
 
+.color-item {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  padding: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.color-item:hover {
+  transform: scale(1.1);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+}
+
 .color-grid-item {
   aspect-ratio: 1;
   border-radius: 4px;
@@ -386,7 +405,7 @@
   height: 60px;
   border-radius: var(--radius-md);
   border: 2px solid var(--color-border);
-  background: linear-gradient(135deg, #000000 0%, #ffffff 100%);
+  background-color: #808080;
   margin-bottom: 12px;
   box-shadow: var(--shadow-sm);
 }
