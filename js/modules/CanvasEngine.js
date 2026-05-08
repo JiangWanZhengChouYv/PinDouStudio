@@ -35,7 +35,26 @@ export class CanvasEngine {
     this.pixels = Array(height).fill(null).map(() => Array(width).fill(-1));
     this.initThumbnail();
     this.initEventListeners();
+    this.initRowColumnNumbers();
     this.saveState();
+  }
+
+  initRowColumnNumbers() {
+    const columnNumbersEl = document.getElementById('column-numbers');
+    const rowNumbersEl = document.getElementById('row-numbers');
+    if (!columnNumbersEl || !rowNumbersEl) return;
+    columnNumbersEl.innerHTML = '';
+    rowNumbersEl.innerHTML = '';
+    for (let x = 1; x <= this.width; x++) {
+      const span = document.createElement('span');
+      span.textContent = x;
+      columnNumbersEl.appendChild(span);
+    }
+    for (let y = 1; y <= this.height; y++) {
+      const span = document.createElement('span');
+      span.textContent = y;
+      rowNumbersEl.appendChild(span);
+    }
   }
 
   initThumbnail() {
@@ -94,6 +113,7 @@ export class CanvasEngine {
         oldPixels[y] && oldPixels[y][x] !== undefined ? oldPixels[y][x] : -1
       )
     );
+    this.initRowColumnNumbers();
     this.saveState();
     this.scheduleRender();
   }
