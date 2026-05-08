@@ -307,8 +307,8 @@ class EditorController {
 
     const rowNumbersWidth = 30;
     const columnNumbersHeight = 24;
-    const availableWidth = container.clientWidth - rowNumbersWidth - 40;
-    const availableHeight = container.clientHeight - columnNumbersHeight - 40;
+    const availableWidth = container.clientWidth - rowNumbersWidth;
+    const availableHeight = container.clientHeight - columnNumbersHeight;
     const pixelSize = Math.min(
       40,
       Math.floor(availableWidth / project.width),
