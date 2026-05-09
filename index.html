@@ -31,6 +31,78 @@
       </div>
     </header>
     
+    <section class="hero-section">
+      <div class="hero-content">
+        <h2 class="hero-title">🎨 创造你的像素艺术</h2>
+        <p class="hero-subtitle">支持 Artkal、Perler、Mard 三大品牌色卡，轻松设计拼豆图案</p>
+        <div class="quick-create">
+          <span class="quick-label">快速开始：</span>
+          <button class="quick-btn" data-width="16" data-height="16">16×16</button>
+          <button class="quick-btn" data-width="32" data-height="32">32×32</button>
+          <button class="quick-btn" data-width="64" data-height="64">64×64</button>
+        </div>
+      </div>
+    </section>
+    
+    <section class="features-section">
+      <div class="feature-card">
+        <div class="feature-icon">✏️</div>
+        <h3 class="feature-title">自由绘画</h3>
+        <p class="feature-desc">铅笔、橡皮、填充，多种工具助你创作</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3 class="feature-title">颜色匹配</h3>
+        <p class="feature-desc">支持 Artkal、Perler、Mard 三大品牌色卡</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📤</div>
+        <h3 class="feature-title">导出分享</h3>
+        <p class="feature-desc">导出 PNG/PDF，附带色号和网格线</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📁</div>
+        <h3 class="feature-title">项目管理</h3>
+        <p class="feature-desc">创建、编辑、复制、删除，灵活管理项目</p>
+      </div>
+    </section>
+    
+    <section class="brands-section">
+      <h3 class="brands-title">支持的拼豆品牌</h3>
+      <div class="brands-grid">
+        <div class="brand-preview">
+          <div class="brand-name">Artkal</div>
+          <div class="brand-colors">
+            <span class="color-dot" style="background-color: #FFFFFF;"></span>
+            <span class="color-dot" style="background-color: #FF6B6B;"></span>
+            <span class="color-dot" style="background-color: #4ECDC4;"></span>
+            <span class="color-dot" style="background-color: #45B7D1;"></span>
+            <span class="color-dot" style="background-color: #96CEB4;"></span>
+          </div>
+        </div>
+        <div class="brand-preview">
+          <div class="brand-name">Perler</div>
+          <div class="brand-colors">
+            <span class="color-dot" style="background-color: #F8F9FA;"></span>
+            <span class="color-dot" style="background-color: #E74C3C;"></span>
+            <span class="color-dot" style="background-color: #3498DB;"></span>
+            <span class="color-dot" style="background-color: #2ECC71;"></span>
+            <span class="color-dot" style="background-color: #F39C12;"></span>
+          </div>
+        </div>
+        <div class="brand-preview">
+          <div class="brand-name">Mard</div>
+          <div class="brand-colors">
+            <span class="color-dot" style="background-color: #FAFAFA;"></span>
+            <span class="color-dot" style="background-color: #F63D4B;"></span>
+            <span class="color-dot" style="background-color: #3CBCE3;"></span>
+            <span class="color-dot" style="background-color: #B34EC6;"></span>
+            <span class="color-dot" style="background-color: #FAF5CD;"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+    
     <main class="main-content">
       <div id="project-grid" class="project-grid">
         <!-- 项目卡片将通过JS动态生成 -->
@@ -39,7 +111,8 @@
       <div id="empty-state" class="empty-state" style="display: none;">
         <div class="empty-icon">🎨</div>
         <h2>还没有项目</h2>
-        <p>点击上方"创建项目"开始你的拼豆设计</p>
+        <p>点击下方按钮开始你的拼豆设计之旅</p>
+        <button class="empty-cta" onclick="document.getElementById('create-project-btn').click()">创建第一个项目</button>
       </div>
     </main>
     

@@ -306,18 +306,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
+  min-height: 50vh;
   text-align: center;
   animation: fadeIn var(--transition-slow);
+  padding: 2rem;
 }
 
 .empty-icon {
   font-size: 5rem;
   margin-bottom: 1.5rem;
-  animation: bounce 2s ease-in-out infinite;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(99, 102, 241, 0.2));
 }
 
-@keyframes bounce {
+@keyframes float {
   0%, 100% {
     transform: translateY(0);
   }
@@ -330,12 +332,35 @@
   font-size: 1.75rem;
   color: var(--color-text-primary);
   margin: 0 0 0.75rem 0;
+  font-weight: 600;
 }
 
 .empty-state p {
   font-size: 1.1rem;
   color: var(--color-text-secondary);
   margin: 0;
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+/* 空状态引导按钮 */
+.empty-cta {
+  margin-top: 1.5rem;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.empty-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
 }
 
 /* 加载状态 */
@@ -817,5 +842,65 @@ input:focus,
   
   .hero-title {
     font-size: 1.5rem;
+  }
+}
+
+/* 品牌色卡展示区 */
+.brands-section {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.brands-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 1rem 0;
+  text-align: center;
+}
+
+.brands-grid {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+}
+
+.brand-preview {
+  text-align: center;
+}
+
+.brand-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.brand-colors {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.color-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform var(--transition-fast);
+}
+
+.color-dot:hover {
+  transform: scale(1.2);
+}
+
+@media (max-width: 576px) {
+  .brands-grid {
+    flex-direction: column;
+    gap: 1.5rem;
   }
 }
