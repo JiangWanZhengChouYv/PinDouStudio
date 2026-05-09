@@ -96,6 +96,28 @@
   animation: cardEnter 0.4s ease-out;
 }
 
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.project-card:hover::before {
+  opacity: 1;
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary);
+}
+
 @keyframes cardEnter {
   from {
     opacity: 0;
@@ -128,6 +150,13 @@
   overflow: hidden;
   transition: transform var(--transition-normal);
   position: relative;
+  background-image: 
+    linear-gradient(45deg, rgba(99, 102, 241, 0.05) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(99, 102, 241, 0.05) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(99, 102, 241, 0.05) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(99, 102, 241, 0.05) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 }
 
 .card-thumbnail canvas {
@@ -674,5 +703,119 @@ input:focus,
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+  }
+}
+
+/* Hero欢迎区域 */
+.hero-section {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.hero-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 0.75rem 0;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 1.5rem 0;
+}
+
+.quick-create {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.quick-label {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.quick-btn {
+  padding: 0.6rem 1.2rem;
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.quick-btn:hover {
+  background: var(--color-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* 功能特性展示区 */
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.feature-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  text-align: center;
+  transition: all var(--transition-normal);
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.feature-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.feature-desc {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* 响应式布局 */
+@media (max-width: 992px) {
+  .features-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .features-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero-title {
+    font-size: 1.5rem;
   }
 }
